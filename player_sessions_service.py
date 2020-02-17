@@ -24,30 +24,29 @@ completed_sessions = [
 
 
 # Get completed sessions
-@app.route('/sessions/getcompleted', methods=['GET'])
-def get_completed_sessions():
-    return jsonify({'completed_sessions': completed_sessions})
-
+@app.route('/sessions/getcompleted/<int:player_id>', methods=['GET'])
+def get_completed_sessions(player_id):	
+	print("LOG: Got request for player: %d" % player_id)
+	return jsonify({'completed_sessions': completed_sessions})
 
 # Send events for completed sessions
 @app.route('/sessions/sendevents', methods=['POST'])
 def create_events():
 	
-	print("Received request")
-	print(request.json)
+	print("LOG:Received Events")
 
 	if not request.json or not is_valid_request(request.json):
 		abort(400)	
 
 	event_statuses = []
 
-	for event in request.json:
+	for event in request.json:		
 		event_to_append = create_event(event)
 		if event_to_append != None:  						
 			write_event(event)
 			event_statuses.append({'status': 'Added to DB', 'event':event})
 		else:
-			event_statuses.append({'status': 'Error while adding to DB', 'event':event})(400)
+			event_statuses.append({'status': 'Error while adding to DB', 'event':event})
 
 	return make_response(jsonify({'event_statuses': event_statuses}), 201)
 

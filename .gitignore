@@ -1,0 +1,6 @@
+demo/
+metastore_db/
+derby.log
+*.pyc
+*.log
+__pycache__/

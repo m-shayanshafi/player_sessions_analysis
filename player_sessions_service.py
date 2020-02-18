@@ -2,11 +2,15 @@ from flask import Flask
 from flask import make_response, jsonify
 from flask import abort
 from flask import request
+from flask import Blueprint
+from cassandra.cqlengine import connection
 import sys
+from models.session import Session
+import datetime
 
 
-app = Flask(__name__)
-
+playerSession = Blueprint("playersession", __name__)
+connection.setup(['127.0.0.1'], "cqlengine", protocol_version=3)
 
 completed_sessions = [
     	{
@@ -21,16 +25,14 @@ completed_sessions = [
 		}
 ]
 
-
-
 # Get completed sessions
-@app.route('/sessions/getcompleted/<int:player_id>', methods=['GET'])
+@playerSession.route('/sessions/getcompleted/<int:player_id>', methods=['GET'])
 def get_completed_sessions(player_id):	
 	print("LOG: Got request for player: %d" % player_id)
 	return jsonify({'completed_sessions': completed_sessions})
 
 # Send events for completed sessions
-@app.route('/sessions/sendevents', methods=['POST'])
+@playerSession.route('/sessions/sendevents', methods=['POST'])
 def create_events():
 	
 	print("LOG:Received Events")
@@ -52,7 +54,7 @@ def create_events():
 
 
 # Error handling
-@app.errorhandler(404)
+@playerSession.errorhandler(404)
 def not_found(error):	
     return make_response(jsonify({'error': 'Player id not found'}), 404)		
 
@@ -64,7 +66,12 @@ def create_event(event):
 def write_event(event):	
 
 	# TODO: Add to Cassandra DB
-	completed_sessions.append(event)
+	# completed_sessions.append(event)
+	ts = "2016-11-22T20:40:50"
+	str_timestamp = datetime.datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+	timestamp = datetime.datetime.timestamp(str_timestamp)
+	session = Session.create(player_id=event["player_id"], session_id=event["session_id"], event=event["event"],ts=timestamp)	
+	session.save()
 	return
 
 
@@ -73,10 +80,9 @@ def is_valid_request(events):
 	for event in events:
 		if not(event['session_id'] and event['player_id'] and (event['event']=='start' or event['event']=='end')):			
 			return False
-
 	return True
 	
 
-if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+# if __name__ == '__main__':
+#     app.run(debug=True, threaded=True)
     # app.run(HOST=XXX, PORT=XXX , threaded=True)

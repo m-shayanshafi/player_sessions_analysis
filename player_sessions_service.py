@@ -15,26 +15,25 @@ KEYSPACE='playersessions'
 
 playerSession = Blueprint("playersession", __name__)
 connection.setup(['127.0.0.1'], "cqlengine", protocol_version=3)
-
 cluster = Cluster(['127.0.0.1'])
 session = cluster.connect(KEYSPACE)    
 
 # Get completed sessions
 @playerSession.route('/sessions/getcompleted/<player_id>', methods=['GET'])
+# Function to get completed sessions
 def get_completed_sessions(player_id):	
 	
-	print("LOG: Got request for player: %s" % player_id)	
-
+	print("LOG: Got request for player: %s" % player_id)
 	rows = session.execute("SELECT player_id, session_id, ts FROM completed_session WHERE player_id='%s' LIMIT 20" % (player_id))
-
 	output = [dict(zip(COL_NAMES, row)) for row in rows]
 	return jsonify({'completed_sessions': output})
+
 
 # Consume events and add to DB
 @playerSession.route('/sessions/sendevents', methods=['POST'])
 def create_events():
 	
-	print("LOG:Received Events")
+	print("LOG:Received Batch of Events")
 	if not request.json or not is_valid_request(request.json):
 		abort(400)	
 
@@ -54,27 +53,27 @@ def create_events():
 def not_found(error):	
     return make_response(jsonify({'error': 'Player id not found'}), 404)		
 
+# Add timestamp to received events
 def check_event_add_timestamp(event):	
 
 	player_id = event["player_id"]
 	session_id = event["session_id"]
 
-	# Check if start event exists
+	# Check if start event exists for end. Otherwise return error
 	if event["event"] == "end":
 
-		rows = session.execute("SELECT player_id, session_id FROM start_session WHERE player_id='%s' AND session_id='%s' " % (player_id, session_id))
-		print(len(rows.current_rows))		
+		rows = session.execute("SELECT player_id, session_id FROM start_session WHERE player_id='%s' AND session_id='%s' " % (player_id, session_id))	
 		if (len(rows.current_rows))	!= 1:
 			err = "No start event for end event. Failed to Write!"	
 			return event, err
-		print(rows[0])		
 
-	event["ts"] = datetime.datetime.now().timestamp()
+	event["ts"] = datetime.datetime.now()
 	return event, None
 
+
+# Error handling
 def write_event(event):	
 
-	# str_timestamp = datetime.datetime.strptime(ts, "%Y-%m-%dT%H:%M:%S")
 	if event["event"] == "start":
 
 		session = StartSession.create(player_id=event["player_id"], session_id=event["session_id"], ts=event["ts"])	
@@ -90,7 +89,7 @@ def write_event(event):
 
 	return
 
-
+# Check request for validity
 def is_valid_request(events):
 
 	for event in events:

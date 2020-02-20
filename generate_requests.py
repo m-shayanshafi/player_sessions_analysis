@@ -10,9 +10,9 @@ outputRequestPath = "requests/"
 numRequests = 50
 completed_session_players = []
 
+# Generate records for start and end
 def get_start_end_record(record):
 
-    # TODO Generate realistic records
     thisEvent = record["event"]
     record.pop('ts')
     randNumber = random.randint(1, 100)
@@ -30,7 +30,7 @@ def get_start_end_record(record):
             new_record["event"] = "start"
             return [new_record, record]
     else:
-        
+
         if thisEvent == "start":
             return [record]
 

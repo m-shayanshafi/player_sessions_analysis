@@ -1,11 +1,12 @@
 from cassandra.cqlengine import columns
 from models.base import Base
 
+# Sessions start, complete and end
 class StartSession(Base):    
 
     player_id = columns.Text(partition_key=True, primary_key=True)
     session_id = columns.Text(primary_key=True)
-    ts = columns.DateTime()
+    ts = columns.DateTime(primary_key=True)
 
     def get_data(self):
         return {
@@ -18,7 +19,7 @@ class EndSession(Base):
 
     player_id = columns.Text(partition_key=True, primary_key=True)
     session_id = columns.Text(primary_key=True)
-    ts = columns.DateTime()
+    ts = columns.DateTime(primary_key=True)
 
     def get_data(self):
         return {

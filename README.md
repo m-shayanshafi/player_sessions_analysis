@@ -1,3 +1,7 @@
+# Quiz
+
+Developer quiz answers in Muhammad_Shayan_Quiz.pdf
+
 # Task 1
 
 Task 1 in Jupyter notebook implemented in player_sessions_insights_1.ipynb.

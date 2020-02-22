@@ -81,7 +81,6 @@ def main():
 
     for player in completed_session_players:
         g.write(player+"\n")
-
     g.close()
 
 

@@ -41,7 +41,7 @@ bash generate_requests.py
 ``` 
 
 
-## Step 4: Run the scripts
+## Step 4: Send Requests to WebService
 4. Run script to send events and get metrics of completed events   
 ```
 bash generate_requests.sh

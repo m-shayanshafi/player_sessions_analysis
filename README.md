@@ -1,14 +1,4 @@
-# Quiz
-
-Developer quiz answers in Muhammad_Shayan_Quiz.pdf
-
-# Task 1
-
-Task 1 in Jupyter notebook implemented in player_sessions_insights_1.ipynb.
-
-The output is also available in task1_pdf_jupyter.pdf. 
-
-# Task 2: Player Web Service
+# Player Sessions Insights and Web Service
 
 ## Prerequisites
 
@@ -17,14 +7,29 @@ The output is also available in task1_pdf_jupyter.pdf.
 3. Cassandra Flask
 4. FlaskAPScheduler
 
+## Player Sessions Insights
+
+This dataset loads the JSON dataset into player sessions using Apache Spark. The Jupyter Notebook (player_sessions_insights_1.ipynb.) answers the following questions:  
+
+1. Sessions completed per country
+2. Number of completed sessions.
+3. Players by country.
+
+
+# Sessions WebService API
+
+Implements a REST API using Flask and Cassandra as the NOSQL database. The service consumes events that signify when a player session starts/ends. It provides an API endpoint that fetches the most recent completed sessions of a player. The following instructions are for test running an API:
+
 ## Step 1:Start Cassandra
+
 1. Run the Cassandra database on your local machine.
 ```
 cassandra -f
 ```
 
 ## Step 2:Run App
-2. Run the webservice using the following:
+
+Run the webservice using the following:
 ```
 python runApp.py
 ```
@@ -34,6 +39,7 @@ python runApp.py
 ```
 bash generate_requests.py
 ``` 
+
 
 ## Step 4: Run the scripts
 4. Run script to send events and get metrics of completed events   

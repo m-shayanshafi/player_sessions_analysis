@@ -4,7 +4,7 @@
 
 1. Python 3.8.1
 2. Apache Cassandra
-3. Cassandra Flask
+3. Flask
 4. FlaskAPScheduler
 
 ## Player Sessions Insights
